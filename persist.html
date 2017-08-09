@@ -1,0 +1,101 @@
+ 
+<script type="text/javascript">
+    RED.nodes.registerType('persist-store',{
+        category: 'config',
+        defaults: {
+            filename: {value:"persistance.json",required:true},
+            interval: {value:60,required:true,validate:RED.validators.number()},
+        },
+        label: function() {
+            return this.filename;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="persist-store">
+    <div class="form-row">
+        <label for="node-config-input-filename"><i class="icon-bookmark"></i> Filename</label>
+        <input type="text" id="node-config-input-filename">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-interval"><i class="icon-bookmark"></i> Interval</label>
+        <input type="text" id="node-config-input-interval">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="persist-store">
+    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
+    <p></p>
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('persist in',{
+        category: 'storage',
+        color: '#00ffff',
+        defaults: {
+            name: {value:"", required: "true"},
+            storageNode: {value: "", type: "persist-store", required: "true"}
+        },
+        inputs:1,
+        outputs:0,
+        align: "right",
+        icon: "db.png",
+        label: function() {
+            return this.name||"persist";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="persist in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" id="persist-storage-row">
+        <label for="persist-storage"><i class="fa fa-database"></i> Filename</label>
+        <input type="text" id="persist-storage">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="persist in">
+    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
+    <p> When a flow is started, the last stored message is output.  Messages that are received by a named input node are replayed by the output node with the same name.</p>
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('persist out',{
+        category: 'storage',
+        color: '#00ffff',
+        defaults: {
+            name: {value:"", required: "true"},
+            storageNode: {value: "", type: "persist-store", required: "true"}
+        },
+        inputs:0,
+        outputs:1,
+        align: "left",
+        icon: "db.png",
+        label: function() {
+            return this.name||"persist";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="persist out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" id="persist-storage-row">
+        <label for="persist-storage"><i class="fa fa-database"></i> Filename</label>
+        <input type="text" id="persist-storage">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="persist out">
+    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
+    <p> When a flow is started, the last stored message is output.  Messages that are received by a named input node are replayed by the output node with the same name.</p>
+</script>

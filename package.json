@@ -1,0 +1,29 @@
+{
+  "name": "node-red-contrib-persist",
+  "version": "1.0.0",
+  "description": "A node-red node to persist data between Node Red deploys and restarts.",
+  "dependencies": {"fs-extra": "4.*"},
+  "author": {
+    "name": "Dean Cording",
+    "email": "dean@cording.id.au"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node-red",
+    "persist",
+    "storage"
+  ],
+  "bugs": {
+    "url": "https://github.com/DeanCording/node-red-contrib-persist/issues"
+  },
+  "homepage": "https://github.com/DeanCording/node-red-contrib-persist",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeanCording/node-red-contrib-persist.git"
+  },
+  "node-red": {
+    "nodes": {
+      "persist": "persist.js"
+    }
+  }
+}
