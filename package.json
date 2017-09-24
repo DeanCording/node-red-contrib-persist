@@ -1,8 +1,10 @@
 {
   "name": "node-red-contrib-persist",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A node-red node to persist data between Node Red deploys and restarts.",
-  "dependencies": {"fs-extra": "4.*"},
+  "dependencies": {
+    "fs-extra": "4.*"
+  },
   "author": {
     "name": "Dean Cording",
     "email": "dean@cording.id.au"
