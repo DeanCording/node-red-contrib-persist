@@ -39,19 +39,14 @@ module.exports = function(RED) {
         var node = this;
         node.filename = n.filename;
         node.interval = n.interval || 10;  // update interval in seconds
-
-        node.dirty = false;
-
+        node.dirty = false;  // dirty data flag
         node.values = {};
-
-        node.intervalId = setInterval( function() {
-            node.emit('save');
-        }, this.interval * 1000 );
+	node.timeoutId = null;
 
         try {
-            nodes.values = fs.readJsonSync(node.filename);
+            node.values = fs.readJsonSync(node.filename);
         } catch(err) {
-            node.err(err.message);
+            node.error(err.message);
             node.values = {};
         }
 
@@ -70,7 +65,16 @@ module.exports = function(RED) {
                         } else {
                             node.values[name] = value;
                         }
-                        this.dirty = true;
+
+			if (node.dirty && node.timeoutId == null) {
+                            node.emit('save');
+			} else {
+                            node.dirty = true;
+			    if (node.timeoutId == null) 
+			        node.timeoutId = setTimeout( function() {
+					            node.emit('save');
+					        }, node.interval * 1000 );
+                        }
                     }
                 } else {
                     node.warn("No name set for message to persist");
@@ -87,21 +91,30 @@ module.exports = function(RED) {
 
 
         node.save = function() {  // Commit to file
+            if (!node.dirty) {
+	        node.timeoutId = null; 
+		node.dirty = true; // Buffer has expired so write next change
+		return;
+            }
+	    
+	    node.dirty = false;
+            node.timeoutId = setTimeout( function() {
+                                  node.emit('save');
+                             }, node.interval * 1000 );
+
             try {
-                fs.outputJsonSyc(node.filename, node.values);
+                fs.outputJsonSync(node.filename, node.values);
             } catch(err) {
                 node.error(err.message);
             }
 
-
         };
 
         node.on('save', function() {
-            if (!dirty) return;
 
-            this.save();
+            node.save();
 
-        };
+        });
 
 
         node.on('close', function(removed, done) {
@@ -115,14 +128,14 @@ module.exports = function(RED) {
 
             } else {
                 // Save everything on closing
-                this.save();
+                node.save();
             }
 
             done();
-        };
+        });
 
     }
-    RED.nodes.registerType("persist-store", persistStorageNode);
+    RED.nodes.registerType("persist-store", PersistStorageNode);
 
     // Record data to persist
     function PersistInNode(n) {
@@ -133,7 +146,7 @@ module.exports = function(RED) {
         node.storageNode = RED.nodes.getNode(n.storageNode);
 
         node.on("input", function(msg) {
-            this.storageNode.store(this.name, msg);
+            node.storageNode.store(node.name, msg);
         });
     }
     RED.nodes.registerType("persist in",PersistInNode);
@@ -147,17 +160,17 @@ module.exports = function(RED) {
         node.storageNode = RED.nodes.getNode(n.storageNode);
 
         node.restore = function() {
-            var msg = this.storageNode.getMessage(this.name);
-            this.send(msg);
+            var msg = node.storageNode.getMessage(node.name);
+            node.send(msg);
         };
 
-        node.on("nodes-started", function() {
-            this.restore();
-        };
+        RED.events.on("nodes-started", function() {
+            node.restore();
+        });
 
         node.on("input", function(msg) {
-            this.restore();
-        }
+            node.restore();
+        });
 
     }
     RED.nodes.registerType("persist out",PersistOutNode);
@@ -181,5 +194,4 @@ module.exports = function(RED) {
 
 
 }
-
 

@@ -24,8 +24,20 @@
 </script>
 
 <script type="text/x-red" data-help-name="persist-store">
-    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
-    <p></p>
+    <p>Stores the last messages received to file system to persist it during a node redeploy or system reboot.</p>
+    <h3>Properties</h3>
+        <dl class="message-properties">
+	    <dt>Filename <span class="property-type">string</span></dt>
+            <dd> the path and filename to use as the persistance store.  Can be relative or absolute.</dd>
+            <dt>Interval <span class="property-type">integer</span></dt>
+	    <dd> the minimum buffer flush interval in seconds.</dd>
+        </dl>
+    <h3>Details</h3>
+    <p>Messages are stored in a memory buffer which is flushed to the filesystem.  The buffer is flushed every 
+       <code>interval</code> seconds only if it has changed since the previous flush, or on the next change if it had not
+       changed in the previous interval.  Setting a large interval reduces the frequency of writes but increases the
+       risk of data loss. The buffer is always flushed when the node is stopped.</p>
+
 </script>
 
 
@@ -52,16 +64,34 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-row" id="persist-storage-row">
-        <label for="persist-storage"><i class="fa fa-database"></i> Filename</label>
-        <input type="text" id="persist-storage">
+    <div class="form-row" id="storageNode-row">
+        <label for="node-input-storageNode"><i class="fa fa-database"></i> Store</label>
+        <input type="text" id="node-input-storageNode">
     </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="persist in">
-    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
-    <p> When a flow is started, the last stored message is output.  Messages that are received by a named input node are replayed by the output node with the same name.</p>
+    <p>Stores the last message received to the file system to persist it during a node redeploy 
+        or system reboot.</p>
+<h3>Properties</h3>
+   <dl class="message-properties">
+        <dt>Name <span class="property-type">string</span> </dt>
+        <dd> the name of the persistence node. Messages saved by this node will be sent by the output node of the same name </dd>
+        <dt>Store <span class="property-type">Persistence store</span></dt>
+
+        <dd> the persistence store to save messages in.</dd>
+    </dl>
+
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">msg</span></dt>
+        <dd> the entire message to be saved.</dd>
+    </dl>
+<h3>Details</h3>
+    <p> When a flow is started, the last stored message is output.  Messages that are received 
+        by a named input node are replayed by the output node with the same name.</p>
+
 </script>
 
 
@@ -73,13 +103,36 @@
             name: {value:"", required: "true"},
             storageNode: {value: "", type: "persist-store", required: "true"}
         },
-        inputs:0,
+        inputs:1,
         outputs:1,
         align: "left",
         icon: "db.png",
         label: function() {
             return this.name||"persist";
+        },
+        button: {
+            onclick: function() {
+	                    $.ajax({
+	                        url: "persist/"+this.id,
+	                        type:"POST",
+	                        success: function(resp) {
+                                   RED.notify("Message restore","success");
+	                        },
+                                error: function(jqXHR,textStatus,errorThrown) {
+                                     if (jqXHR.status == 404) {
+                                         RED.notify("Node not deployed","error");
+                                     } else if (jqXHR.status == 500) {
+                                         RED.notify("Message restore failed","error");
+                                     } else if (jqXHR.status == 0) {
+                                         RED.notify("No response","error");
+                                     } else {
+                                         RED.notify("Unexpected error " + textStatus,"error");
+                                     }
+                                }
+                            });
+             }
         }
+
     });
 </script>
 
@@ -88,14 +141,41 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-row" id="persist-storage-row">
-        <label for="persist-storage"><i class="fa fa-database"></i> Filename</label>
-        <input type="text" id="persist-storage">
+    <div class="form-row" id="storageNode-row">
+        <label for="node-input-storageNode"><i class="fa fa-database"></i> Store</label>
+        <input type="text" id="node-input-storageNode">
     </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="persist out">
-    <p>Stores the last message received to the file system to persist it during a node redeploy or system reboot.</p>
-    <p> When a flow is started, the last stored message is output.  Messages that are received by a named input node are replayed by the output node with the same name.</p>
+    <p>Replays the last message received that was stored to the file system to persist it during a node redeploy or system reboot.</p>
+<h3>Properties</h3>
+   <dl class="message-properties">
+        <dt>Name <span class="property-type">string</span> </dt>
+        <dd> the name of the persistence node. This node will send messages previously saved by the input node of the same name </dd>
+        <dt>Store <span class="property-type">Persistence store</span></dt>
+
+        <dd> the persistence store to read messages from.</dd>
+    </dl>
+
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>msg
+            <span class="property-type">msg</span>
+        </dt>
+        <dd> any msg received will trigger a restore. </dd>
+    </dl>
+ <h3>Outputs</h3>
+     <ol class="node-ports">
+         <li>Output
+             <dl class="message-properties">
+                 <dt>msg <span class="property-type">msg</span></dt>
+                 <dd>the persisted messages.</dd>
+             </dl>
+         </li>
+     </ol>
+<h3>Details</h3>
+    <p> When a flow is started, the last stored message is output.  A message received by a named input node is replayed by the output node with the same name.</p>
+    <p> Pressing the button on the node will trigger a replay of the most recently received message.</p>
 </script>
