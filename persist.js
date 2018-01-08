@@ -23,10 +23,6 @@
  *
  **/
 
-
-"use strict";
-
-
 module.exports = function(RED) {
 
 
@@ -55,7 +51,7 @@ module.exports = function(RED) {
 
             try {
                 if (name) {
-                    var value = undefined;
+                    var value;
                     if (msg != null) {
                         value = msg;
                     }
@@ -193,5 +189,5 @@ module.exports = function(RED) {
     });
 
 
-}
+};
 
