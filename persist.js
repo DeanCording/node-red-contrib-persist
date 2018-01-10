@@ -30,6 +30,8 @@ module.exports = function(RED) {
     var os = require("os");
     var path = require("path");
 
+    var util = require("util");
+
     function PersistStorageNode(n) {
         RED.nodes.createNode(this,n);
         var node = this;
@@ -37,7 +39,7 @@ module.exports = function(RED) {
         node.interval = n.interval || 10;  // update interval in seconds
         node.dirty = false;  // dirty data flag
         node.values = {};
-	node.timeoutId = null;
+        node.timeoutId = null;
 
         try {
             node.values = fs.readJsonSync(node.filename);
@@ -61,15 +63,14 @@ module.exports = function(RED) {
                         } else {
                             node.values[name] = value;
                         }
-
-			if (node.dirty && node.timeoutId == null) {
+                    if (node.dirty && node.timeoutId == null) {
                             node.emit('save');
-			} else {
+                        } else {
                             node.dirty = true;
-			    if (node.timeoutId == null) 
-			        node.timeoutId = setTimeout( function() {
-					            node.emit('save');
-					        }, node.interval * 1000 );
+                            if (node.timeoutId == null)
+                                node.timeoutId = setTimeout( function() {
+                                    node.emit('save');
+                                }, node.interval * 1000 );
                         }
                     }
                 } else {
@@ -78,7 +79,6 @@ module.exports = function(RED) {
             } catch(err) {
                 node.error(err.message);
             }
-
         };
 
         node.getMessage = function(name) { // Retrieve previous value
@@ -160,14 +160,17 @@ module.exports = function(RED) {
             node.send(msg);
         };
 
-        RED.events.on("nodes-started", function() {
-            node.restore();
-        });
+
+        RED.events.on("nodes-started", node.restore);
 
         node.on("input", function(msg) {
             node.restore();
         });
 
+        node.on('close', function(removed, done) {
+            RED.events.removeListener("nodes-started", node.restore);
+            done();
+        });
     }
     RED.nodes.registerType("persist out",PersistOutNode);
 
