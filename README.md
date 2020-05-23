@@ -5,16 +5,17 @@
 **Non volatile storage via filesystem**  
 The basic idea is that the contents of messages is stored to a non volatile storage and can be retreived later on (e.g. after a restart of Node-RED or a deploy procedure). These messages are stored at first within an internal buffer until written to the filesystem. This write procedure to the filesystem is executed not more frequently than parametrized in the persistence storage configuration node. 
 
-**"The last message wins"**
+**"The last message wins"**  
 Only the last message received within the storing interval is considered, all other previous messages are discarded. If no message is received within the storing interval, the next incoming message will immediately trigger a store procedure. Setting a large storing interval will reduce filesystem writes but will increase the risk of data loss. 
 Additionally, the buffer is also stored when Node-RED is shutdown.
 
 This node set was written in particular to persist data used in the Dashboard graphs. The graph nodes output their entire current data set for each new input received. This output can be persisted and fed back to the graph node on startup or deploy.
 
+**Configuration node, input node, output node**
 This node set consists of three nodes, 
-- a persistent store ***configuration node*** which buffers the messages and writes them to the filesystem at regular intervals,
-- an ***input node*** to record messages and
-- an ***output node*** which replays the last message saved when Node-RED restarts or is deployed.
+- an invisible persistent store ***configuration node*** `persist-store` which buffers the messages and writes them to the filesystem at regular intervals,
+- an ***input node*** `persist in` to record messages and
+- an ***output node*** `persist out` which replays the last message saved when Node-RED restarts or is deployed.
 
 
 ![node-appearance](assets/node-appearance.png "Node appearance")  
@@ -52,7 +53,7 @@ A message stored by the input node is saved under the name of that node. Only th
 **Fig. 3:** Node properties of the persist configuration node
 
 Fig. 3 shows the configuration of the persist configuration node. The filename may be given with a path (e.g. ~/.node-red/persistence.json). It is important, that the file system is writable. Otherwise an error is thrown. This can be examined via the debug message panel.  
-In the case that this file does not exist, is will be generated.
+In the case that this file does not exist, is will be generated. Also, the file may be edited due to it's plain ASCII character of the JSON contents. A changed file contents can be activated by restarting the flow before the next storing interval has elapsed and the file is overwritten.
 
 The contents of the file is a JSON object containing the persistence data. An example for the file contents is:
 `{"myPersistence":{"_msgid":"3f99dd02.975182","topic":"","payload":"Rhett Nowed"}}`
@@ -152,7 +153,7 @@ This example shows how the replay of storage contents works. With the buttons of
 
 **Fig. 10:** Persistence replay process example
 
-Remark: The replay uses the contents of the internal buffer: In the case that, after an inject of the left inject nodes, a change is immediately shown in the left debug output nodes (`msg.payload`). If then the storing process to the persisten storage file did not take place, a manual replay trigger via the `persist in` node's left button gets the values from the internal buffer instead of the storage file contents.
+**Remark:** The replay uses the contents of the internal buffer: In the case that, after an inject of the left inject nodes, a change is immediately shown in the left debug output nodes (`msg.payload`). If then the storing process to the persisten storage file did not take place, a manual replay trigger via the `persist in` node's left button gets the values from the internal buffer instead of the storage file contents.
 
 
 ```json
