@@ -2,7 +2,14 @@
 
 `node-red-contrib-persist`aims to ***persist data*** over Node-RED ***restarts*** and ***deploys***.
 
-This node set consists of 
+The basic idea is that the contents of messages is stored to a non volatile storage and can be retreived later on (e.g. after a restart of Node-RED or a deploy procedure). These messages are stored at first within an internal buffer until written to the filesystem. This write procedure to the filesystem is executed not more frequently than parametrized in the persistence storage configuration node. 
+
+Only the last message received within the storing interval is considered, all other previous messages are discarded (***"the last message wins"***). If no message is received within the storing interval, the next incoming message will immediately trigger a store procedure. Setting a large storing interval will reduce filesystem writes but will increase the risk of data loss. 
+Additionally, the buffer is also stored when Node-RED is shutdown.
+
+This node set was written in particular to persist data used in the Dashboard graphs. The graph nodes output their entire current data set for each new input received. This output can be persisted and fed back to the graph node on startup or deploy.
+
+This node set consists of three nodes, 
 - a persistent store ***configuration node*** which buffers the messages and writes them to the filesystem at regular intervals,
 - an ***input node*** to record messages and
 - an ***output node*** which replays the last message saved when Node-RED restarts or is deployed.
@@ -12,15 +19,12 @@ This node set consists of
 **Fig. 1:** Node appearance
 
 **Basic operation**  
-A message stored by the input node is saved under the name of that node.  Only the last message received is saved, irrespective of its topic.   The message is replayed by the output node with the same name when it is triggered.  Output nodes are triggered on startup, after deploys, on receipt of any message, or when the button on the node is pressed in the Node-RED console.
+A message stored by the input node is saved under the name of that node. Only the last message received is saved, irrespective of its topic. The message is replayed by the output node having the identical name when triggered. Output nodes are triggered on startup, after deploys, on receipt of any message, or when the button on the node is pressed in the Node-RED console.
 
-<img src="assets/basic-structure.png" title="Basic structure" width="700" />
+<img src="assets/basic-structure.png" title="Basic structure" width="800" />
 
 **Fig. 2:** Basic structure
 
-Messages are stored in an internal buffer until flushed to the filesystem. The buffer is flushed not more frequently than the interval specified in the persistence store configuration node. Messages received within the flush interval are discarded, except for the last message received. If no message is received within the flush interval, the next message received will trigger a flush. Setting a large flush interval will reduce filesystem writes but will increase the risk of data loss. The buffer is flushed when Node-RED is shutdown.
-
-This node set was written in particular to persist data used in the Dashboard graphs.  The graph nodes output their entire current data set for each new input received.  This output can be persisted and fed back to the graph node on startup or deploy.
 
 <a name="installation"></a>
 ## Installation
