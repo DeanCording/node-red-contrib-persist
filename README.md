@@ -2,9 +2,11 @@
 
 `node-red-contrib-persist`aims to ***persist data*** over Node-RED ***restarts*** and ***deploys***.
 
+**Non volatile storage via filesystem**  
 The basic idea is that the contents of messages is stored to a non volatile storage and can be retreived later on (e.g. after a restart of Node-RED or a deploy procedure). These messages are stored at first within an internal buffer until written to the filesystem. This write procedure to the filesystem is executed not more frequently than parametrized in the persistence storage configuration node. 
 
-Only the last message received within the storing interval is considered, all other previous messages are discarded (***"the last message wins"***). If no message is received within the storing interval, the next incoming message will immediately trigger a store procedure. Setting a large storing interval will reduce filesystem writes but will increase the risk of data loss. 
+**"The last message wins"**
+Only the last message received within the storing interval is considered, all other previous messages are discarded. If no message is received within the storing interval, the next incoming message will immediately trigger a store procedure. Setting a large storing interval will reduce filesystem writes but will increase the risk of data loss. 
 Additionally, the buffer is also stored when Node-RED is shutdown.
 
 This node set was written in particular to persist data used in the Dashboard graphs. The graph nodes output their entire current data set for each new input received. This output can be persisted and fed back to the graph node on startup or deploy.
@@ -146,7 +148,7 @@ The contents of the file may e.g. look like:
 
 This example shows how the replay of storage contents works. With the buttons of the left side of the `persist out` node the replay is triggered.
 
-<img src="assets/flow-replay.png" title="Replay example flow" width="700" />
+<img src="assets/flow-replay.png" title="Replay example flow" width="800" />
 
 **Fig. 10:** Persistence replay process example
 
