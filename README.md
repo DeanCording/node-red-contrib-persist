@@ -131,10 +131,10 @@ The example flow shows the "persistence storing" part of the functionality: The 
 
 <img src="assets/flow.png" title="Example flow" width="400" />
 
+**Fig. 8:** Persistence storage process example
+
 The contents of the file may e.g. look like:
 {"myPersistence":{"_msgid":"c493a2a3.73a8e","topic":"","payload":"Rat Nohde"}}
-
-**Fig. 8:** Persistence storage process example
 
 ```json
 [{"id":"f0172f83.431df","type":"persist in","z":"b51e984d.4279b","name":"myPersistence","storageNode":"42dd5cc5.694f1c","x":749,"y":240,"wires":[]},{"id":"3aa581f3.d377be","type":"inject","z":"b51e984d.4279b","name":"name1","topic":"","payload":"Rhett Nowed","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":490,"y":240,"wires":[["f0172f83.431df","2bba8123.3c3a16"]]},{"id":"7610b2fd.8d8eb4","type":"inject","z":"b51e984d.4279b","name":"name2","topic":"","payload":"Ned Rhode","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":490,"y":280,"wires":[["f0172f83.431df","2bba8123.3c3a16"]]},{"id":"2bba8123.3c3a16","type":"debug","z":"b51e984d.4279b","name":"","active":true,"tosidebar":true,"console":false,"tostatus":true,"complete":"payload","targetType":"msg","x":740,"y":300,"wires":[]},{"id":"7eec9ac1.45cddc","type":"inject","z":"b51e984d.4279b","name":"name3","topic":"","payload":"Rat Nohde","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":490,"y":320,"wires":[["f0172f83.431df","2bba8123.3c3a16"]]},{"id":"ddfefd8.eec7f8","type":"inject","z":"b51e984d.4279b","name":"name4","topic":"","payload":"Nat Rowed","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":490,"y":360,"wires":[["f0172f83.431df","2bba8123.3c3a16"]]},{"id":"42dd5cc5.694f1c","type":"persist-store","z":"","filename":"/home/Node-RED/persistance.json","interval":"60"}]
@@ -144,5 +144,16 @@ The contents of the file may e.g. look like:
 
 ### Persistence replay process example
 
-xxx ToDo: Example
+This example shows how the replay of storage contents works. With the buttons of the left side of the `persist out` node the replay is triggered.
 
+<img src="assets/flow-replay.png" title="Replay example flow" width="700" />
+
+**Fig. 10:** Persistence replay process example
+
+Remark: The replay uses the contents of the internal buffer: In the case that, after an inject of the left inject nodes, a change is immediately shown in the left debug output nodes (`msg.payload`). If then the storing process to the persisten storage file did not take place, a manual replay trigger via the `persist in` node's left button gets the values from the internal buffer instead of the storage file contents.
+
+
+```json
+[{"id":"c6404856.d3c2c","type":"persist in","z":"b51e984d.4279b","name":"myPersistence","storageNode":"42dd5cc5.694f1c","x":420,"y":1000,"wires":[]},{"id":"3c78ea0f.209896","type":"inject","z":"b51e984d.4279b","name":"name1","topic":"","payload":"Rhett Nowed","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":169,"y":1000,"wires":[["c6404856.d3c2c","5f618b19.c070cc"]]},{"id":"c9c295d5.3f215","type":"inject","z":"b51e984d.4279b","name":"name2","topic":"","payload":"Ned Rhode","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":169,"y":1040,"wires":[["c6404856.d3c2c","5f618b19.c070cc"]]},{"id":"94867802.54864","type":"persist in","z":"b51e984d.4279b","name":"myOtherPersistence","storageNode":"42dd5cc5.694f1c","x":440,"y":1100,"wires":[]},{"id":"e521c9e4.c1918","type":"inject","z":"b51e984d.4279b","name":"name3","topic":"","payload":"Rat Nohde","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":170,"y":1101,"wires":[["94867802.54864","cb04d5a3.57fdd"]]},{"id":"53a3637c.a18c1c","type":"inject","z":"b51e984d.4279b","name":"name4","topic":"","payload":"Nat Rowed","payloadType":"str","repeat":"","crontab":"","once":false,"onceDelay":0.1,"x":170,"y":1141,"wires":[["94867802.54864","cb04d5a3.57fdd"]]},{"id":"32244e62.80583a","type":"persist out","z":"b51e984d.4279b","name":"myPersistence","storageNode":"42dd5cc5.694f1c","x":700,"y":1000,"wires":[["a6a64468.81561"]]},{"id":"a6a64468.81561","type":"debug","z":"b51e984d.4279b","name":"","active":true,"tosidebar":true,"console":false,"tostatus":true,"complete":"payload","targetType":"msg","x":940,"y":1000,"wires":[]},{"id":"42d4eec.d08421","type":"persist out","z":"b51e984d.4279b","name":"myOtherPersistence","storageNode":"42dd5cc5.694f1c","x":720,"y":1100,"wires":[["802cb65e.e14738"]]},{"id":"802cb65e.e14738","type":"debug","z":"b51e984d.4279b","name":"","active":true,"tosidebar":true,"console":false,"tostatus":true,"complete":"payload","targetType":"msg","x":940,"y":1100,"wires":[]},{"id":"5f618b19.c070cc","type":"debug","z":"b51e984d.4279b","name":"","active":false,"tosidebar":true,"console":false,"tostatus":true,"complete":"payload","targetType":"msg","x":420,"y":1040,"wires":[]},{"id":"cb04d5a3.57fdd","type":"debug","z":"b51e984d.4279b","name":"","active":false,"tosidebar":true,"console":false,"tostatus":true,"complete":"payload","targetType":"msg","x":420,"y":1140,"wires":[]},{"id":"42dd5cc5.694f1c","type":"persist-store","z":"","filename":"/home/Node-RED/persistance.json","interval":"60"}]
+```  
+**Fig. 11:** Persistence replay process example flow
