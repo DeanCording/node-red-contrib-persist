@@ -11,7 +11,7 @@ Additionally, the buffer is also stored when Node-RED is shutdown.
 
 This node set was written in particular to persist data used in the Dashboard graphs. The graph nodes output their entire current data set for each new input received. This output can be persisted and fed back to the graph node on startup or deploy.
 
-**Configuration node, input node, output node**
+**Configuration node, input node, output node**  
 This node set consists of three nodes, 
 - an invisible persistent store ***configuration node*** `persist-store` which buffers the messages and writes them to the filesystem at regular intervals,
 - an ***input node*** `persist in` to record messages and
