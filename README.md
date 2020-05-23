@@ -24,7 +24,7 @@ This node set consists of three nodes,
 **Basic operation**  
 A message stored by the input node is saved under the name of that node. Only the last message received is saved, irrespective of its topic. The message is replayed by the output node having the identical name when triggered. Output nodes are triggered on startup, after deploys, on receipt of any message, or when the button on the node is pressed in the Node-RED console.
 
-<img src="assets/basic-structure.png" title="Basic structure" width="800" />
+<img src="assets/basic-structure.png" title="Basic structure" width="900" />
 
 **Fig. 2:** Basic structure
 
@@ -48,7 +48,7 @@ A message stored by the input node is saved under the name of that node. Only th
 ### Node Configuration
 #### Persist configuration node
 
-<img src="assets/node-settings.png" title="Node configuration of the persist configration node" width="600" />
+<img src="assets/node-settings.png" title="Node configuration of the persist configration node" width="650" />
 
 **Fig. 3:** Node properties of the persist configuration node
 
@@ -62,7 +62,7 @@ The contents of the file is a JSON object containing the persistence data. An ex
 
 The configuration of the `persist in` and `persist out` nodes look like in the following figure. In *Store* the file location of the persistence storage file (i.e. the corresponding persist configuration node) has to be selected. 
 
-<img src="assets/persistence-persist_in.png" title="Node configuration of the 'persist in' and 'persist out' node" width="280" />
+<img src="assets/persistence-persist_in.png" title="Node configuration of the 'persist in' and 'persist out' node" width="300" />
 
 **Fig. 4:** Node properties of the `persist in` and `persist out` node
 
