@@ -52,11 +52,17 @@ A message stored by the input node is saved under the name of that node. Only th
 
 **Fig. 3:** Node properties of the persist configuration node
 
-Fig. 3 shows the configuration of the persist configuration node. The filename may be given with a path (e.g. ~/.node-red/persistence.json). It is important, that the file system is writable. Otherwise an error is thrown. This can be examined via the debug message panel.  
-In the case that this file does not exist, is will be generated. Also, the file may be edited due to it's plain ASCII character of the JSON contents. A changed file contents can be activated by restarting the flow before the next storing interval has elapsed and the file is overwritten.
+Fig. 3 shows the configuration of the persist configuration node. The filename may be given with a path (e.g. ~/.node-red/persistence.json). 
+It is important, that the file system is writable, otherwise an error is thrown. See also section [Error handling](#error_handling).  
+In the case that this file does not exist, it is generated. 
 
 The contents of the file is a JSON object containing the persistence data. An example for the file contents is:
 `{"myPersistence":{"_msgid":"3f99dd02.975182","topic":"","payload":"Rhett Nowed"}}`
+
+Also, the file may be edited due to it's plain ASCII character of the JSON contents. A changed file contents can be activated by 
+* restarting the flow, or
+* initiate a replay via the left button at the `persist out` node
+before the next storing interval has elapsed and the manually changed file is overwritten.
 
 #### Node configuraton of the `persist in` and `persist out` node
 
@@ -124,12 +130,24 @@ This output data has to be used to set other data: This is the basis of the pers
 
 <a name="further_information"></a>
 ### Further information
-Check Node-REDs info panel to see more information on how to use the easing node.
+Check Node-REDs info panel to see more information on how to use the `persist in` and `persist out`  nodes.
+
+<a name="error_handling"></a>
+## Error handling
+
+The following error list contains only typical errors given by the debug output panel when beginning to use this node: 
+1. **Persistence file is not present** at flow start (resp. at data replay)
+   In this case the debug output gives this message: ***/home/Node-RED/persistence.json: ENOENT: no such file or directory, open '/home/Node-RED/persistence.json'***. This could be overcome by initiating a change of one of the persisted data so that the persistence file is updated/generated.
+2. **File location is not writable**
+   In this case the debug output gives this message: ***EACCES: permission denied, open '/home/Node-RED/persistence.json'***. The cause of this could be that the directory access rights which should be "nodered:nodered" are not set properly (changable with linux `chown` command). Another point could be that a file *persistence.json* already exists with the wrong file access rights (changable with the linux command `chmod +w persistence.json` in the correct directory). 
+   If the file location is not known, it could be seached in a shell via the linux command `find / -name persistence.json`. 
+
+
 
 <a name="example"></a>
 ## Examples
 
-### Persistence storage process example
+### Persistence storing process example
 The example flow shows the "persistence storing" part of the functionality: The last inject of the names is stored at a rate of one minute to the persistence file.
 
 <img src="assets/flow.png" title="Example flow" width="400" />
@@ -147,7 +165,7 @@ The contents of the file may e.g. look like:
 
 ### Persistence replay process example
 
-This example shows how the replay of storage contents works. With the buttons of the left side of the `persist out` node the replay is triggered.
+This example shows how the "persistence replay" of stored contents works. With the buttons of the left side of the `persist out` node the replay is triggered.
 
 <img src="assets/flow-replay.png" title="Replay example flow" width="800" />
 
