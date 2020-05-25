@@ -1,9 +1,9 @@
- 
+
 <script type="text/javascript">
     RED.nodes.registerType('persist-store',{
         category: 'config',
         defaults: {
-            filename: {value:"persistance.json",required:true},
+            filename: {value:"persistence.json",required:true},
             interval: {value:60,required:true,validate:RED.validators.number()},
         },
         label: function() {
@@ -18,7 +18,7 @@
         <input type="text" id="node-config-input-filename">
     </div>
     <div class="form-row">
-        <label for="node-config-input-interval"><i class="icon-bookmark"></i> Interval</label>
+        <label for="node-config-input-interval"><i class="icon-bookmark"></i> Interval [sec]</label>
         <input type="text" id="node-config-input-interval">
     </div>
 </script>
@@ -28,15 +28,15 @@
     <h3>Properties</h3>
         <dl class="message-properties">
 	    <dt>Filename <span class="property-type">string</span></dt>
-            <dd> the path and filename to use as the persistance store.  Can be relative or absolute.</dd>
+            <dd> the path and filename to use as the persistence store. Can be relative or absolute. Care for write accessability within the target directory.</dd>
             <dt>Interval <span class="property-type">integer</span></dt>
-	    <dd> the minimum buffer flush interval in seconds.</dd>
+	    <dd> the minimum buffer storing interval in seconds.</dd>
         </dl>
     <h3>Details</h3>
-    <p>Messages are stored in a memory buffer which is flushed to the filesystem.  The buffer is flushed every 
-       <code>interval</code> seconds only if it has changed since the previous flush, or on the next change if it had not
-       changed in the previous interval.  Setting a large interval reduces the frequency of writes but increases the
-       risk of data loss. The buffer is always flushed when the node is stopped.</p>
+    <p>Messages are stored in a memory buffer which is written to the filesystem. The buffer is stored every
+       <code>interval</code> seconds only if it has changed since the previous storing process, or on the next change if it had not
+       changed in the previous interval. Setting a large interval reduces the frequency of writes, but increases the
+       risk of data loss. The buffer is always stored when the node is stopped.</p>
 
 </script>
 
@@ -44,7 +44,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('persist in',{
         category: 'storage',
-        color: '#00ffff',
+        color: '#33cccc',
         defaults: {
             name: {value:"", required: "true"},
             storageNode: {value: "", type: "persist-store", required: "true"}
@@ -72,7 +72,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="persist in">
-    <p>Stores the last message received to the file system to persist it during a node redeploy 
+    <p>Stores the last message received to the file system to persist it during a node redeploy
         or system reboot.</p>
 <h3>Properties</h3>
    <dl class="message-properties">
@@ -89,7 +89,7 @@
         <dd> the entire message to be saved.</dd>
     </dl>
 <h3>Details</h3>
-    <p> When a flow is started, the last stored message is output.  Messages that are received 
+    <p> When a flow is started, the last stored message is output.  Messages that are received
         by a named input node are replayed by the output node with the same name.</p>
 
 </script>
@@ -98,7 +98,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('persist out',{
         category: 'storage',
-        color: '#00ffff',
+        color: '#33cccc',
         defaults: {
             name: {value:"", required: "true"},
             storageNode: {value: "", type: "persist-store", required: "true"}
