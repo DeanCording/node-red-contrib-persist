@@ -88,12 +88,12 @@ module.exports = function(RED) {
 
         node.save = function() {  // Commit to file
             if (!node.dirty) {
-	        node.timeoutId = null; 
-		node.dirty = true; // Buffer has expired so write next change
-		return;
+                node.timeoutId = null;
+                node.dirty = true; // Buffer has expired so write next change
+                return;
             }
 	    
-	    node.dirty = false;
+            node.dirty = false;
             node.timeoutId = setTimeout( function() {
                                   node.emit('save');
                              }, node.interval * 1000 );
